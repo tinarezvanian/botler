@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.botler.botler">
+    <!-- Required for OpenAI HTTPS calls in debug and release. -->
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="Botler"
         android:name="${applicationName}"

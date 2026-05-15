@@ -1,4 +1,4 @@
-package com.example.example
+package com.botler.botler
 
 import io.flutter.embedding.android.FlutterActivity
 
