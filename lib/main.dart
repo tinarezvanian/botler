@@ -3,9 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:window_size/window_size.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'env/app_env.dart';
 import 'model.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppEnv.init();
   runApp(const MyApp());
 }
 
@@ -37,28 +40,29 @@ class ChatPage extends StatefulWidget {
 }
 
 Future<String> generateResponse(String prompt) async {
-  const apiKey = String.fromEnvironment('OPENAI_API_KEY');
+  final apiKey = AppEnv.openAiApiKey;
   if (apiKey.isEmpty) {
     throw StateError(
-      'Set OPENAI_API_KEY via --dart-define=OPENAI_API_KEY=... when running.',
+      'Add OPENAI_API_KEY to .env.local (copy from .env.example) or pass '
+      '--dart-define=OPENAI_API_KEY=... Web builds require dart-define.',
     );
   }
 
-  var url = Uri.https("api.openai.com", "/v1/completions");
+  final url = AppEnv.openAiCompletionsUri;
   final response = await http.post(
     url,
     headers: {
       'Content-Type': 'application/json',
-      "Authorization": "Bearer $apiKey"
+      'Authorization': 'Bearer $apiKey',
     },
     body: json.encode({
-      "model": "text-davinci-003",
-      "prompt": prompt,
-      'temperature': 1,
-      'max_tokens': 2000,
-      'top_p': 1,
-      'frequency_penalty': 0.0,
-      'presence_penalty': 0.0,
+      'model': AppEnv.openAiModel,
+      'prompt': prompt,
+      'temperature': AppEnv.openAiTemperature,
+      'max_tokens': AppEnv.openAiMaxTokens,
+      'top_p': AppEnv.openAiTopP,
+      'frequency_penalty': AppEnv.openAiFrequencyPenalty,
+      'presence_penalty': AppEnv.openAiPresencePenalty,
     }),
   );
 
